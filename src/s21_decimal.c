@@ -1,6 +1,68 @@
 #include "s21_decimal.h"
 
-// errokele
+// // errokele
+// int s21_wrt(s21_decimal result) {
+//   for (int j = 0; j < 4; j++) {
+//     for (int i = 0; i < 32; i++) {
+//       if ((result.bits[3 - j] >> (31 - i)) & 1) {
+//         printf("1");
+//       } else {
+//         printf("0");
+//       }
+//     }
+//     printf("\n");
+//   }
+//   printf("\n");
+//   return 0;
+// }
+
+// int main (){
+//     s21_decimal src1 = {0};
+//     s21_decimal src2 = {0};
+//     // scanf("%u", &a.bits[0]);
+//     // scanf("%u", &b.bits[0]);
+//     //             00000000000001011001000011001100
+//   src1.bits[0] = 0;
+//   src1.bits[1] = 0;
+//   src1.bits[2] = 1;
+//   src1.bits[3] = 0b10000000000000000000000000000000;
+  
+//   src2.bits[0] = 0;
+//   src2.bits[1] = 0;
+//   src2.bits[2] = 2;
+//   src2.bits[3] = 0b00000000000000000000000000000000;
+//   // 0b000000000001011001000011001011
+
+// // 00000000000000000000000000000000
+// // 11111111111111111111111111111111
+// // 11111111111000001011111000001110
+// // 00010111010101110100100010001000s
+
+
+    
+    
+//     // b.bits[3] = b.bits[3] | (1 << 31);
+//     //  a.bits[3] = a.bits[3] | (1 << 31);
+//    //  b.bits[3] = 4;
+//     //b.bits[6] = b.bits[6] | (1 << 17);
+//     s21_decimal * result = malloc(sizeof(int) * 4);
+//     // s21_big_decimal_to_decimal(b, result);
+//     printf("inf?  %u\n", s21_div(src1, src2, result));
+//     // wrt(*result);
+//     // printf("inf? a - b %u\n",s21_minus(a, b, result));
+//     // wrt(*result)
+
+//     // printf("inf? a /b  %u\n",s21_div_core(a, b, result ));
+//     // wrt(*result);
+//     // printf("inf? a * b %u\n",s21_mul (a, b, result));
+//     for (int i = 0; i < 3; i++){
+//       // result->bits[i] =b.bits[i] ;
+//     }
+//      s21_wrt(*result);
+//     return 0;
+
+// }
+
 void set_sign(int sign, s21_decimal *bit) {
   if (sign) {
     unsigned int mask = POSITIVE_MASK;
@@ -26,7 +88,7 @@ void set_scale(int coef, s21_decimal *bit) {
 }
 
 void get_scale(int *coef, s21_decimal bit) {
-  *coef = (bit.bits[3] << 1) >> 17;  // 2^24
+  *coef = (bit.bits[3] << 1) >> 17;  // 2^24s
 }
 
 int get_bit(int num, s21_decimal *value) {
@@ -756,9 +818,7 @@ int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result_tmp) {
     int flag = 1;
     one.bits[0] = 1;
 
-    for (int i = 0; i < 3; i++) {
-      a->bits[i] = value_1.bits[i];
-      b->bits[i] = value_2.bits[i];
+    for (int i = 0; i < 6; i++) {
       value_2_tmp.bits[i] = b->bits[i];
       value_2_.bits[i] = b->bits[i];
       value_1_tmp.bits[i] = a->bits[i];
@@ -845,7 +905,7 @@ int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result_tmp) {
     }
 
     inf = s21_big_decimal_to_decimal(*result, result_tmp);
-    if (((value_1.bits[6] >> 31) ^ (value_2.bits[6] >> 31)) && inf == 1) {
+    if (((value_1.bits[3] >> 31) ^ (value_2.bits[3] >> 31)) && inf == 1) {
       inf = 2;
     }
     result_tmp->bits[3] = (result_tmp->bits[3] | (scale_sum << 16));
@@ -874,7 +934,7 @@ int s21_big_decimal_to_decimal(s21_big_decimal value, s21_decimal *result) {
 
   tmp = value;
   int scale = 0;
-  scale = tmp.bits[6] >> 16;
+  scale = value.bits[6] >> 16;
   while (scale != 0) {
     if (tmp.bits[3] == 0 && tmp.bits[4] == 0 && tmp.bits[5] == 0) {
       for (int i = 0; i < 3; i++) {
