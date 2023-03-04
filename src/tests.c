@@ -6026,7 +6026,7 @@ START_TEST(s21_div_11) {
 END_TEST
 
 START_TEST(s21_mod_1) {
-  s21_decimal src1, src2, res_mod;
+  s21_decimal src1 = {0}, src2  ={0}, res_mod={0};
   int a = 3;
   int b = 2;
   int res_origin = a % b;
@@ -6040,7 +6040,7 @@ START_TEST(s21_mod_1) {
 END_TEST
 
 START_TEST(s21_mod_2) {
-  s21_decimal src1, src2, res_mod;
+  s21_decimal src1 = {0}, src2  ={0}, res_mod={0};
   int a = -98765;
   int b = 1234;
   int res_origin = a % b;
@@ -6054,7 +6054,7 @@ START_TEST(s21_mod_2) {
 END_TEST
 
 START_TEST(s21_mod_3) {
-  s21_decimal src1, src2, res_mod;
+  s21_decimal src1 = {0}, src2  ={0}, res_mod={0};
   int a = 30198;
   int b = 20210;
   int res_origin = a % b;
@@ -6068,7 +6068,7 @@ START_TEST(s21_mod_3) {
 END_TEST
 
 START_TEST(s21_mod_4) {
-  s21_decimal src1, src2, res_mod;
+  s21_decimal src1 = {0}, src2  ={0}, res_mod={0};
   int a = -98765;
   int b = -1234;
   int res_origin = a % b;
@@ -6082,7 +6082,7 @@ START_TEST(s21_mod_4) {
 END_TEST
 
 START_TEST(s21_mod_5) {
-  s21_decimal src1, src2, res_mod;
+  s21_decimal src1 = {0}, src2  ={0}, res_mod={0};
   int a = 98765;
   int b = 127234;
   int res_origin = a % b;
@@ -6096,7 +6096,7 @@ START_TEST(s21_mod_5) {
 END_TEST
 
 START_TEST(s21_mod_6) {
-  s21_decimal src1, src2, res_mod;
+ s21_decimal src1 = {0}, src2  ={0}, res_mod={0};
   int a = 342576;
   int b = 1542134;
   int res_origin = a % b;
@@ -6110,7 +6110,7 @@ START_TEST(s21_mod_6) {
 END_TEST
 
 START_TEST(s21_mod_7) {
-  s21_decimal src1, src2, res_mod;
+  s21_decimal src1 = {0}, src2  ={0}, res_mod={0};
   int a = 12;
   int b = 0;
   s21_from_int_to_decimal(a, &src1);
@@ -6121,7 +6121,7 @@ START_TEST(s21_mod_7) {
 END_TEST
 
 START_TEST(s21_mod_8) {
-  s21_decimal src1, src2, res_mod;
+  s21_decimal src1 = {0}, src2  ={0}, res_mod={0};
   int a = 12;
   float b = 0.0000;
   s21_from_int_to_decimal(a, &src1);
@@ -6132,7 +6132,7 @@ START_TEST(s21_mod_8) {
 END_TEST
 
 START_TEST(s21_mul_1) {
-  s21_decimal src1, src2, origin, result;
+  s21_decimal src1 ={0}, src2 ={0}, origin = {0}, result = {0};
   int value_type_result, value_type_origin;
   // src1 = 2;
   // src2 = 3;
@@ -6159,7 +6159,7 @@ START_TEST(s21_mul_1) {
 END_TEST
 
 START_TEST(s21_mul_2) {
-  s21_decimal src1, src2, origin, result;
+   s21_decimal src1 ={0}, src2 ={0}, origin = {0}, result = {0};
   int value_type_result, value_type_origin;
   // src1 = 3;
   // src2 = 2;
@@ -6186,7 +6186,7 @@ START_TEST(s21_mul_2) {
 END_TEST
 
 START_TEST(s21_mul_3) {
-  s21_decimal src1, src2, origin, result;
+   s21_decimal src1 ={0}, src2 ={0}, origin = {0}, result = {0};
   int value_type_result, value_type_origin;
   // src1 = 0;
   // src2 = 3;

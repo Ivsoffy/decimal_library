@@ -26,7 +26,7 @@ void set_scale(int coef, s21_decimal *bit) {
 }
 
 void get_scale(int *coef, s21_decimal bit) {
-  *coef = (bit.bits[3] << 8) / 16777216;  // 2^24
+  *coef = (bit.bits[3] << 1) >> 17;  // 2^24
 }
 
 int get_bit(int num, s21_decimal *value) {
@@ -47,7 +47,7 @@ int s21_from_int_to_decimal(int src, s21_decimal *dst) {
 int s21_from_decimal_to_int(s21_decimal src, int *dst) {
   int status = 0;
   int sign = 0;
-  s21_decimal tmp;
+  s21_decimal tmp = {0};
   s21_truncate(src, &tmp);
   get_sign(&sign, tmp);
   if ((tmp.bits[2] == 0) && (tmp.bits[1] == 0)) {
@@ -73,7 +73,7 @@ int s21_from_float_to_decimal(float src, s21_decimal *dst) {
       status = 1;
     }
   } else {
-    char str[100];
+    char str[100] = {0};
     snprintf(str, 100, "%.6e", src);
     int sign = (src > 0 ? 0 : 1);
     src = fabsf(src);
@@ -104,7 +104,7 @@ int s21_from_float_to_decimal(float src, s21_decimal *dst) {
 
 int s21_from_decimal_to_float(s21_decimal src, float *dst) {
   int status = 0;
-  int scale;
+  int scale = 0;
   get_scale(&scale, src);
   if (dst == NULL || scale > 28) {
     status = 1;
@@ -132,16 +132,18 @@ int s21_from_decimal_to_float(s21_decimal src, float *dst) {
 
 int s21_truncate(s21_decimal value, s21_decimal *result) {  // cp result
   int status = 0;
-  int scale = 0;
-  int i = 0;
-  s21_decimal result1;
+    int scale = 0;
+  s21_decimal result1 = {0};
+  // int tmp = 0;
   copy_decimal(&result1, value);
-  get_scale(&scale, value);
-  for (i = 0; i < scale; i++) {
+  // get_scale(&scale, value);
+  // tmp = (value.bits[3] << 1) >> 17;
+  scale = (value.bits[3] << 1) >> 17;
+  for ( int i = 0; i < scale; i++) {
     mul_X(value, &result1);
     copy_decimal(&value, result1);
   }
-  if (!i) {
+  if (!scale) {
     copy_decimal(&result1, value);
   }
   copy_decimal(result, result1);
@@ -178,8 +180,8 @@ void mul_X(s21_decimal src, s21_decimal *rez) {
   }
   rez->bits[3] = src.bits[3];
   for (int i = 2; i >= 0; i--) {
-    modd = (unsigned long long)(buff + src.bits[i]) % 10;
-    rez->bits[i] = (unsigned long long)(buff + src.bits[i]) / 10;
+    modd = (buff + src.bits[i]) % 10;
+    rez->bits[i] = (buff + src.bits[i]) / 10;
     buff = modd << 32;
   }
   get_scale(&scale, src);
@@ -199,7 +201,7 @@ int s21_negate(s21_decimal value, s21_decimal *result) {
 
 int s21_round(s21_decimal value, s21_decimal *result) {
   int status = 0;
-  int scale = 0, sign;
+  int scale = 0, sign = 0;
   int flag = 0;
   for (int i = 0; i < 3; i++) {
     if (value.bits[i] != 0) flag = 1;
@@ -207,10 +209,10 @@ int s21_round(s21_decimal value, s21_decimal *result) {
   get_sign(&sign, value);
   if (flag) {
     int i = 0;
-    s21_decimal result1;
-    s21_decimal one;
-    s21_decimal ten;
-    s21_decimal mantissa_src;
+    s21_decimal result1 = {0};
+    s21_decimal one = {0};
+    s21_decimal ten = {0};
+    s21_decimal mantissa_src = {0};
     s21_from_int_to_decimal(10, &ten);
     s21_from_int_to_decimal(1, &one);
     copy_decimal(&result1, value);
@@ -264,8 +266,8 @@ int s21_round(s21_decimal value, s21_decimal *result) {
 }
 
 int s21_floor(s21_decimal value, s21_decimal *result) {
-  int status = 0, sign;
-  s21_decimal value_cp;
+  int status = 0, sign = 0;
+  s21_decimal value_cp = {0};
   s21_truncate(value, &value_cp);
   get_sign(&sign, value);
   if (s21_is_not_equal(value, value_cp)) {
@@ -377,12 +379,6 @@ int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
 int s21_is_greater_or_equal_big(s21_big_decimal value_1,
                                 s21_big_decimal value_2) {  //
 
-  s21_big_decimal *a = malloc(sizeof(unsigned int) * 7);
-  s21_big_decimal *b = malloc(sizeof(unsigned int) * 7);
-  for (int i = 0; i < 7; i++) {
-    a->bits[i] = 0;
-    b->bits[i] = 0;
-  }
   int tmp = 0;
   int flag = 1;
   // wrt(value_1)
@@ -439,8 +435,6 @@ int s21_is_greater_or_equal_big(s21_big_decimal value_1,
     }
   }
   return tmp;
-  free(a);
-  free(b);
 }
 void scale_norming(s21_decimal value_1, s21_decimal value_2, s21_big_decimal *a,
                    s21_big_decimal *b) {
@@ -565,6 +559,9 @@ int shift_10(int total_scale, s21_big_decimal *result) {
   s21_big_decimal a_s = {0};
   s21_big_decimal b_s = {0};
   s21_big_decimal *tmp = malloc(sizeof(unsigned int) * 7);
+  for(int i = 0; i < 7; i++){
+    tmp->bits[i] = 0;
+  }
 
   for (int i = 0; i < 3; i++) {
     tmp->bits[i] = result->bits[i];
@@ -724,7 +721,7 @@ int s21_mod_core(s21_big_decimal value_1, s21_big_decimal value_2,
 
 int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result_tmp) {
   int inf = 0;
-  int sign1, sign2;
+  int sign1 = 0, sign2 = 0;
   get_sign(&sign1, value_1);
   get_sign(&sign2, value_2);
 
@@ -734,6 +731,11 @@ int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result_tmp) {
     s21_big_decimal *a = malloc(sizeof(unsigned int) * 7);
     s21_big_decimal *b = malloc(sizeof(unsigned int) * 7);
     s21_big_decimal *result = malloc(sizeof(unsigned int) * 7);
+    for(int i = 0; i < 7; i++){
+      a->bits[i] = 0;
+      b->bits[i] = 0;
+      result->bits[i] = 0;
+    }
     scale_norming(value_1, value_2, a, b);
     s21_big_decimal tmp = {0};
     s21_big_decimal count = {0};
@@ -866,57 +868,54 @@ int s21_big_decimal_to_decimal(s21_big_decimal value, s21_decimal *result) {
   one.bits[0] = 1;
   ten.bits[0] = 10;
 
-  s21_big_decimal *tmp = malloc(sizeof(int) * 7);
-  s21_big_decimal *ost = malloc(sizeof(int) * 7);
-  s21_big_decimal *imagine = malloc(sizeof(int) * 7);
-  for (int i = 0; i < 7; i++) {
-    tmp->bits[i] = value.bits[i];
-    ost->bits[i] = 0;
-    imagine->bits[i] = 0;
-  }
-  int temp = tmp->bits[6] >> 16;
-  while (temp) {
-    if (tmp->bits[3] == 0 && tmp->bits[4] == 0 && tmp->bits[5] == 0) {
+  s21_big_decimal tmp = {0};
+  s21_big_decimal ost = {0};
+
+
+  tmp = value;
+  int scale = 0;
+  scale = tmp.bits[6] >> 16;
+  while (scale != 0) {
+    if (tmp.bits[3] == 0 && tmp.bits[4] == 0 && tmp.bits[5] == 0) {
       for (int i = 0; i < 3; i++) {
-        result->bits[i] = tmp->bits[i];
+        result->bits[i] = tmp.bits[i];
       }
       break;
     } else {
-      tmp->bits[6] = ((tmp->bits[6] >> 16) - 1) << 16;
-      s21_mod_core(*tmp, ten, ost);
-      if (ost->bits[0] == 5) {
-        mul_XX(*tmp, tmp);
-        if (tmp->bits[0] % 2) {
-          *tmp = s21_add_core(*tmp, one, tmp);
+      scale--;
+      tmp.bits[6] = scale << 16;
+      s21_mod_core(tmp, ten, &ost);
+      if (ost.bits[0] == 5) {
+        mul_XX(tmp, &tmp);
+        if (tmp.bits[0] % 2) {
+          tmp = s21_add_core(tmp, one, &tmp);
         }
       } else {
-        s21_mod_core(*tmp, ten, ost);
-        if (ost->bits[0] < 5) {
-          mul_XX(*tmp, tmp);
+        s21_mod_core(tmp, ten, &ost);
+        if (ost.bits[0] < 5) {
+          mul_XX(tmp, &tmp);
         }
-        if (ost->bits[0] > 5) {
-          mul_XX(*tmp, tmp);
-          *tmp = s21_add_core(*tmp, one, tmp);
+        if (ost.bits[0] > 5) {
+          mul_XX(tmp, &tmp);
+          tmp = s21_add_core(tmp, one, &tmp);
         }
       }
     }
-    temp = tmp->bits[6] >> 16;
+
   }
-  if (tmp->bits[3] == 0 && tmp->bits[4] == 0 && tmp->bits[5] == 0) {
+  if (tmp.bits[3] == 0 && tmp.bits[4] == 0 && tmp.bits[5] == 0) {
     for (int i = 0; i < 3; i++) {
-      result->bits[i] = tmp->bits[i];
+      result->bits[i] = tmp.bits[i];
     }
 
-    result->bits[3] = tmp->bits[6];
+    result->bits[3] = tmp.bits[6];
     if (value.bits[6] >> 31) {
       result->bits[3] = result->bits[3] | (1 << 31);
     }
   } else {
     inf = 1;
   }
-  free(tmp);
-  free(ost);
-  free(imagine);
+
   return inf;
 }
 
@@ -1200,4 +1199,3 @@ int s21_mod(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   free(b);
   return status;
 }
-//mod div big_dec_to_dec
