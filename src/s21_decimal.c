@@ -1,67 +1,6 @@
 #include "s21_decimal.h"
 
 // // errokele
-// int s21_wrt(s21_decimal result) {
-//   for (int j = 0; j < 4; j++) {
-//     for (int i = 0; i < 32; i++) {
-//       if ((result.bits[3 - j] >> (31 - i)) & 1) {
-//         printf("1");
-//       } else {
-//         printf("0");
-//       }
-//     }
-//     printf("\n");
-//   }
-//   printf("\n");
-//   return 0;
-// }
-
-// int main (){
-//     s21_decimal src1 = {0};
-//     s21_decimal src2 = {0};
-//     // scanf("%u", &a.bits[0]);
-//     // scanf("%u", &b.bits[0]);
-//     //             00000000000001011001000011001100
-//   src1.bits[0] = 0;
-//   src1.bits[1] = 0;
-//   src1.bits[2] = 1;
-//   src1.bits[3] = 0b10000000000000000000000000000000;
-  
-//   src2.bits[0] = 0;
-//   src2.bits[1] = 0;
-//   src2.bits[2] = 2;
-//   src2.bits[3] = 0b00000000000000000000000000000000;
-//   // 0b000000000001011001000011001011
-
-// // 00000000000000000000000000000000
-// // 11111111111111111111111111111111
-// // 11111111111000001011111000001110
-// // 00010111010101110100100010001000s
-
-
-    
-    
-//     // b.bits[3] = b.bits[3] | (1 << 31);
-//     //  a.bits[3] = a.bits[3] | (1 << 31);
-//    //  b.bits[3] = 4;
-//     //b.bits[6] = b.bits[6] | (1 << 17);
-//     s21_decimal * result = malloc(sizeof(int) * 4);
-//     // s21_big_decimal_to_decimal(b, result);
-//     printf("inf?  %u\n", s21_div(src1, src2, result));
-//     // wrt(*result);
-//     // printf("inf? a - b %u\n",s21_minus(a, b, result));
-//     // wrt(*result)
-
-//     // printf("inf? a /b  %u\n",s21_div_core(a, b, result ));
-//     // wrt(*result);
-//     // printf("inf? a * b %u\n",s21_mul (a, b, result));
-//     for (int i = 0; i < 3; i++){
-//       // result->bits[i] =b.bits[i] ;
-//     }
-//      s21_wrt(*result);
-//     return 0;
-
-// }
 
 void set_sign(int sign, s21_decimal *bit) {
   if (sign) {
@@ -194,14 +133,14 @@ int s21_from_decimal_to_float(s21_decimal src, float *dst) {
 
 int s21_truncate(s21_decimal value, s21_decimal *result) {  // cp result
   int status = 0;
-    int scale = 0;
+  int scale = 0;
   s21_decimal result1 = {0};
   // int tmp = 0;
   copy_decimal(&result1, value);
   // get_scale(&scale, value);
   // tmp = (value.bits[3] << 1) >> 17;
   scale = (value.bits[3] << 1) >> 17;
-  for ( int i = 0; i < scale; i++) {
+  for (int i = 0; i < scale; i++) {
     mul_X(value, &result1);
     copy_decimal(&value, result1);
   }
@@ -621,7 +560,7 @@ int shift_10(int total_scale, s21_big_decimal *result) {
   s21_big_decimal a_s = {0};
   s21_big_decimal b_s = {0};
   s21_big_decimal *tmp = malloc(sizeof(unsigned int) * 7);
-  for(int i = 0; i < 7; i++){
+  for (int i = 0; i < 7; i++) {
     tmp->bits[i] = 0;
   }
 
@@ -793,7 +732,7 @@ int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result_tmp) {
     s21_big_decimal *a = malloc(sizeof(unsigned int) * 7);
     s21_big_decimal *b = malloc(sizeof(unsigned int) * 7);
     s21_big_decimal *result = malloc(sizeof(unsigned int) * 7);
-    for(int i = 0; i < 7; i++){
+    for (int i = 0; i < 7; i++) {
       a->bits[i] = 0;
       b->bits[i] = 0;
       result->bits[i] = 0;
@@ -931,7 +870,6 @@ int s21_big_decimal_to_decimal(s21_big_decimal value, s21_decimal *result) {
   s21_big_decimal tmp = {0};
   s21_big_decimal ost = {0};
 
-
   tmp = value;
   int scale = 0;
   scale = value.bits[6] >> 16;
@@ -961,7 +899,6 @@ int s21_big_decimal_to_decimal(s21_big_decimal value, s21_decimal *result) {
         }
       }
     }
-
   }
   if (tmp.bits[3] == 0 && tmp.bits[4] == 0 && tmp.bits[5] == 0) {
     for (int i = 0; i < 3; i++) {
